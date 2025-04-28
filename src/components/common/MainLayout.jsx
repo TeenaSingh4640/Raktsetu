@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { FaTint, FaBell, FaChartBar, FaUserCircle, FaSignOutAlt, FaBars, FaTimes, FaTachometerAlt, FaHandHoldingHeart, FaCog, FaShieldAlt, FaUsers, FaCalendarCheck } from 'react-icons/fa';
+import { 
+    FaTint, FaBell, FaChartBar, FaUserCircle, FaSignOutAlt, 
+    FaBars, FaTimes, FaTachometerAlt, FaHandHoldingHeart, 
+    FaCog, FaShieldAlt, FaUsers, FaCalendarCheck,
+    FaGift, FaEye 
+} from 'react-icons/fa';
+import { useAuth } from '../../contexts/Authcontext';
 
 const commonNavItems = [
     { path: '/alerts', label: 'Alerts & Requests', icon: FaBell },
@@ -13,38 +19,39 @@ const roleNavItems = {
     donor: [
         { path: '/donor-dashboard', label: 'Dashboard', icon: FaTachometerAlt },
         { path: '/my-donations', label: 'Donation History', icon: FaHandHoldingHeart },
-        { path: '/rewards', label: 'Rewards', icon: FaGift }, // Assuming FaGift is imported or use another
+        { path: '/rewards', label: 'Rewards', icon: FaGift },
         { path: '/schedule', label: 'Appointments', icon: FaCalendarCheck },
         ...commonNavItems,
     ],
     hospital: [
         { path: '/hospital-dashboard', label: 'Inventory Dashboard', icon: FaChartBar },
-        { path: '/manage-requests', label: 'Manage Requests', icon: FaBell }, // Reuse or choose specific icon
+        { path: '/manage-requests', label: 'Manage Requests', icon: FaBell },
         { path: '/donor-management', label: 'Donor Management', icon: FaUsers },
         { path: '/schedule-drives', label: 'Schedule Drives', icon: FaCalendarCheck },
         ...commonNavItems,
     ],
     authority: [
         { path: '/authority-dashboard', label: 'Analytics Dashboard', icon: FaChartBar },
-        { path: '/blockchain-ledger', label: 'Transaction Ledger', icon: FaShieldAlt }, // Conceptual
-        { path: '/oversight', label: 'System Oversight', icon: FaEye }, // Assuming FaEye imported
+        { path: '/blockchain-ledger', label: 'Transaction Ledger', icon: FaShieldAlt },
+        { path: '/oversight', label: 'System Oversight', icon: FaEye },
         ...commonNavItems,
     ],
 };
 
-
-// Mock function to get user role - replace with actual auth context
-const getUserRole = () => 'donor'; // Change this to 'hospital' or 'authority' to test
-
 const MainLayout = ({ children }) => {
     const location = useLocation();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const userRole = getUserRole(); // Get the current user's role
+    const { user, logout } = useAuth(); // Use actual auth context
+    const userRole = user?.role || 'donor'; // Get role from auth context, default to donor
     const navItems = roleNavItems[userRole] || commonNavItems; // Get nav items based on role
 
     const activeClass = "bg-primary/20 text-primary border-l-4 border-primary";
-    const inactiveClass = "text-text-secondary hover:bg-secondary/40 hover:text-text-main";
+    const inactiveClass = "text-text-secondary hover:bg-secondary/10 hover:text-text-main";
     const linkClass = `flex items-center px-4 py-3 text-sm font-medium transition-colors duration-150`;
+
+    const handleLogout = () => {
+        logout(); // Use actual logout function from AuthContext
+    };
 
     const sidebarContent = (
         <>
@@ -75,7 +82,7 @@ const MainLayout = ({ children }) => {
             {/* Footer/Logout */}
             <div className="px-4 py-4 border-t border-secondary/30 mt-auto">
                 <button
-                    onClick={() => alert('Logout logic here')} // Replace with actual logout
+                    onClick={handleLogout}
                     className={`${linkClass} ${inactiveClass} w-full`}
                 >
                     <FaSignOutAlt className="mr-3 h-5 w-5" aria-hidden="true" />
@@ -127,7 +134,5 @@ const MainLayout = ({ children }) => {
         </div>
     );
 };
-// Make sure to import any missing icons like FaGift, FaEye
-import { FaGift, FaEye } from 'react-icons/fa';
 
 export default MainLayout;

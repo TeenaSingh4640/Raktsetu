@@ -4,18 +4,18 @@ import { AuthProvider, useAuth } from './contexts/Authcontext'
 import './index.css'
 // Page Imports
 import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage'; // Import SignupPage
+import SignupPage from './pages/SignupPage';
 import DonorDashboardPage from './pages/DonorDashboardPage';
 import HospitalDashboardPage from './pages/HospitalDashboardPage';
-import AuthorityDashboardPage from './pages/AuthorityDashboardPage'; // Assume exists
-import AlertsPage from './pages/AlertsPage'; // Assume exists
-import ProfilePage from './pages/ProfilePage'; // Import ProfilePage
-import SettingsPage from './pages/SettingsPage'; // Assume exists
+import AuthorityDashboardPage from './pages/AuthorityDashboardPage';
+import AlertsPage from './pages/AlertsPage';
+import ProfilePage from './pages/ProfilePage';
+import SettingsPage from './pages/SettingsPage';
 // Add other page imports like MyDonations, Rewards, etc.
 
 // Common Components
-import ProtectedRoute from './components/common/ProtectedRoute'; // Adjust path
-import MainLayout from './components/common/MainLayout'; // Needed for protected pages
+import ProtectedRoute from './components/common/ProtectedRoute';
+import MainLayout from './components/common/MainLayout';
 
 // A simple wrapper to apply MainLayout to protected routes easily
 const ProtectedLayout = ({ children }) => (
@@ -46,15 +46,14 @@ const DefaultRedirect = () => {
 
 function App() {
   return (
-    <AuthProvider> {/* Wrap everything in AuthProvider */}
+    <AuthProvider>
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
 
         {/* Protected Routes */}
-        {/* Wrap protected page elements within ProtectedRoute */}
-
+        {/* Donor Dashboard */}
         <Route
           path="/donor-dashboard"
           element={
@@ -65,16 +64,20 @@ function App() {
             </ProtectedRoute>
           }
         />
+        
+        {/* Hospital Dashboard - Fixed to match other protected routes pattern */}
         <Route
           path="/hospital-dashboard"
           element={
-
-
-            <HospitalDashboardPage />
-
-
+            <ProtectedRoute allowedRoles={['hospital']}>
+              <ProtectedLayout>
+                <HospitalDashboardPage />
+              </ProtectedLayout>
+            </ProtectedRoute>
           }
         />
+        
+        {/* Authority Dashboard */}
         <Route
           path="/authority-dashboard"
           element={
@@ -90,7 +93,7 @@ function App() {
         <Route
           path="/alerts"
           element={
-            <ProtectedRoute allowedRoles={['donor', 'hospital']}> {/* Example */}
+            <ProtectedRoute allowedRoles={['donor', 'hospital']}>
               <ProtectedLayout>
                 <AlertsPage />
               </ProtectedLayout>
@@ -100,7 +103,7 @@ function App() {
         <Route
           path="/profile"
           element={
-            <ProtectedRoute> {/* Allow any logged-in user */}
+            <ProtectedRoute>
               <ProtectedLayout>
                 <ProfilePage />
               </ProtectedLayout>
@@ -110,7 +113,7 @@ function App() {
         <Route
           path="/settings"
           element={
-            <ProtectedRoute> {/* Allow any logged-in user */}
+            <ProtectedRoute>
               <ProtectedLayout>
                 <SettingsPage />
               </ProtectedLayout>
@@ -119,23 +122,14 @@ function App() {
         />
         {/* Add other protected routes for MyDonations, Rewards, etc. following the pattern */}
 
-
-
-
-
-
         {/* Default Route Handler */}
         <Route path="/" element={<DefaultRedirect />} />
 
-        {/* Catch-all for unmatched routes (optional: create a 404 page) */}
+        {/* Catch-all for unmatched routes */}
         <Route path="*" element={<Navigate to="/" replace />} />
-
       </Routes>
     </AuthProvider>
   );
 }
 
 export default App;
-
-// NOTE: Remember to create the actual page components:
-// AuthorityDashboardPage, AlertsPage, SettingsPage etc.
