@@ -40,6 +40,29 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // Guest login function - bypass authentication
+    const guestLogin = async (role = 'donor') => {
+        setIsLoading(true);
+        console.log("Logging in as guest with role:", role);
+        
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Create a guest user with the specified role
+        const guestUser = { 
+            id: `guest-${Date.now()}`, 
+            email: 'guest@example.com', 
+            role: role, 
+            name: `Guest ${role.charAt(0).toUpperCase() + role.slice(1)}`,
+            isGuest: true // Flag to identify guest users
+        };
+        
+        setUser(guestUser);
+        console.log("Guest login successful:", guestUser);
+        setIsLoading(false);
+        return true;
+    };
+
     // Simulated signup function (doesn't log in automatically here)
     const signup = async (userData) => {
         setIsLoading(true);
@@ -67,6 +90,7 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         signup,
+        guestLogin,
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
